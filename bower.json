@@ -1,9 +1,10 @@
 {
   "name": "paper-file-chooser",
   "version": "1.0.11",
-  "description": "Material design button",
+  "description": "Material design file chooser",
   "authors": [
-    "The Polymer Authors"
+    "The Polymer Authors",
+    "Davide Zeffiro <elrancid@gmail.com>"
   ],
   "keywords": [
     "web-components",
