@@ -18,113 +18,135 @@ to choose one or more files is opened.
 
 Example:
 
-    <paper-file-chooser>Flat button</paper-file-chooser>
-    <paper-file-chooser raised>Raised button</paper-file-chooser>
-    <paper-file-chooser noink>No ripple effect</paper-file-chooser>
-    <paper-file-chooser multiple>Choose multiple files</paper-file-chooser>
+   <paper-file-chooser>Flat button</paper-file-chooser>
+   <paper-file-chooser raised>Raised button</paper-file-chooser>
+   <paper-file-chooser noink>No ripple effect</paper-file-chooser>
+   <paper-file-chooser multiple>Choose multiple files</paper-file-chooser>
 
 You may use custom DOM in the button body to create a variety of buttons. For example, to
 create a button with an icon and some text:
 
-    <paper-button>
-      <iron-icon icon="favorite"></iron-icon>
-      custom button content
-    </paper-button>
+   <paper-button>
+     <iron-icon icon="favorite"></iron-icon>
+     custom button content
+   </paper-button>
 
 @demo demo/index.html
 -->
 
 <dom-module id="paper-file-chooser">
-  <template>
-    <style>
-      :host { display: block; }
-    	input#inputfiles { display: none; }
-    </style>
+ <template>
+   <style>
+     :host { display: block; }
+     input#inputfiles { display: none; }
+   </style>
 
-    <input
-      id="inputfiles"
-      type="file"
-      name="files"
-      on-change="onFilesSelected"
-      multiple="[[multiple]]"
-    ></input>
+   <input
+     id="inputfiles"
+     type="file"
+     name="files"
+     on-change="onFilesSelected"
+     multiple="[[multiple]]"
+   ></input>
 
-    <paper-button
-      id="button"
-      on-tap="selectFiles"
-      raised="[[raised]]"
-      active="[[active]]"
-      noink="[[noink]]"
-      class="[[class]]"
-    ><content></content></paper-button>
-  </template>
+   <paper-button
+     id="button"
+     on-tap="selectFiles"
+     raised="[[raised]]"
+     active="[[active]]"
+     noink="[[noink]]"
+     class="[[class]]"
+   ><content></content></paper-button>
+ </template>
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'paper-file-chooser',
+ Polymer({
+   is: 'paper-file-chooser',
 
-    behaviors: [],
+   behaviors: [],
 
-    properties: {
-      /**
-       * If true, the button should be styled with a shadow.
-       */
-      raised: {
-        type: Boolean
-      },
-      /**
-       * If true, the button is a toggle and is currently in the active state.
-       */
-      active: {
-        type: Boolean
-      },
-      /**
-       * If true, the element will not produce a ripple effect when interacted
-       * with via the pointer.
-       */
-      noink: {
-        type: Boolean
-      },
-      /**
-       * Classes to apply to the button.
-       */
-      class: {
-        type: String,
-        reflectToAttribute: true,
-      },
+   properties: {
+     /**
+      * If true, the button should be styled with a shadow.
+      */
+     raised: {
+       type: Boolean
+     },
+     /**
+      * If true, the button is a toggle and is currently in the active state.
+      */
+     active: {
+       type: Boolean
+     },
+     /**
+      * If true, the element will not produce a ripple effect when interacted
+      * with via the pointer.
+      */
+     noink: {
+       type: Boolean
+     },
+     /**
+      * Classes to apply to the button.
+      */
+     class: {
+       type: String,
+       reflectToAttribute: true,
+     },
 
-      /**
-       * If true, the file chooser can accept multiple files
-       */
-      multiple: {
-        type: Boolean
-      },
+     /**
+      * If true, the file chooser can accept multiple files
+      */
+     multiple: {
+       type: Boolean
+     },
 
-      /**
-       * The selected files (FileList object)
-       */
-      fileList: {
-        type: Object,
-        notify: true,
-        observer: 'fileListChanged'
-      }
-    },
+     /**
+      * The selected files (FileList object)
+      */
+     fileList: {
+       type: Object,
+       notify: true,
+       observer: 'fileListChanged'
+     }
+   },
 
-    onFilesSelected: function() {
-  		var files = this.$.inputfiles.files;
-  		if (!files) return;
-      //if(file.size > this.fileSizeLimit) return window.alert("File is too big. Please choose a file under 10MB.");
-      //file.name = file.name + "?" + (Math.random() * 1000); // browser cache buster
-  		this.fileList = files;
-      //this.readableFileSize = this.getReadableFileSize(file.size);
-  	},
-    selectFiles: function() {
-  		this.$.inputfiles.click();
-  	},
-    fileListChanged: function(to) {
-      if (!to) this.$.inputfiles.value = '';
-    }
+   onFilesSelected: function() {
+     let files = this.$.inputfiles.files;
+     let filesOk = [];
+     if (!files) return;
+     // check files' extension
+     for (let fileIndex in files) {
+       if (files.hasOwnProperty(fileIndex)) {
+         if (this.extensionCheck(files[fileIndex].name)) filesOk.push(files[fileIndex]);
+       }
+     }
+     this.fileList = filesOk;
+   },
 
-  });
+   selectFiles: function() {
+     this.$.inputfiles.click();
+   },
+
+   fileListChanged: function(to) {
+     if (!to) this.$.inputfiles.value = '';
+   },
+
+   extensionCheck: function(filename) {
+     // TODO: update extensions when needed
+     let extension = filename.substr(filename.lastIndexOf('.')+1);
+     let reImg = /(jpg|jpeg|tiff|png)/;
+     let reVideo = /(gif|mp4|mov|3gp|avi)/;
+
+     if (reImg.test(extension)) {
+       return true;
+     }
+     else if (reVideo.test(extension)) {
+       return true;
+     }
+     else {
+       return false;
+     }
+   }
+ });
 </script>
